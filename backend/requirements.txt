@@ -1,0 +1,20 @@
+# HumanLLM backend dependencies.
+# NOTE: fastapi is pinned below 0.120 and pydantic below 2.11 because newer
+# pydantic releases changed some validation internals that break request
+# parsing in this codebase. Keep them in lockstep.
+fastapi==0.116.2
+uvicorn[standard]==0.40.0
+sqlalchemy[asyncio]==2.0.52
+asyncpg==0.30.0
+aiosqlite==0.21.0
+redis==8.1.0
+aioboto3==15.2.0
+pyjwt==2.13.0
+bcrypt==5.0.0
+python-multipart==0.0.21
+pydantic==2.10.6
+httpx==0.28.1
+websockets==16.0
+openai==3.3.1
+pytest==9.0.2
+pytest-asyncio==1.2.0

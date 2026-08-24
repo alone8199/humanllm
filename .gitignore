@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# 数据库与敏感数据
+*.db
+*.db.bak-*
+*.sqlite
+*.sqlite3
+
+# 日志
+*.log
+service.log
+run.log
+
+# 前端
+node_modules/
+dist/
+.vercel/
+
+# 临时 / 调试 / 备份
+*.bak-*
+*.live
+check*.py
+cleanup*.py
+clean3.py
+fix_urls.py
+mm_test.py
+shoot*.py
+shot_*.png
+
+# 环境
+.env

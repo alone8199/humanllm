@@ -1,0 +1,8 @@
+-- 0002_toolcalls.sql
+-- Originally added human-in-the-loop function-calling columns:
+--   tasks.tools       : OpenAI tool/function definitions sent by the caller
+--   tasks.tool_calls  : assistant tool_calls the human worker fills in
+-- These columns were later merged directly into 0001_init.sql (SQLite has no
+-- "ADD COLUMN IF NOT EXISTS"), so applying the ALTERs again on a fresh DB
+-- failed with "duplicate column name". This file is now a no-op to keep the
+-- schema_migrations record consistent; the columns already exist via 0001.

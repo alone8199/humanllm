@@ -1,0 +1,103 @@
+# HumanLLM — full stack: backend (FastAPI) + frontend (React) +
+# PostgreSQL + Redis + MinIO. No AI is used anywhere; human workers
+# answer every request.
+#
+# Quick start (from this directory):
+#   cp .env.example .env
+#   docker compose up --build
+#   # frontend  -> http://localhost:5173
+#   # backend   -> http://localhost:8000  (OpenAI-compatible API)
+#
+# For zero-dependency local dev (sqlite + local storage + in-memory broker)
+# see README "Local development without Docker".
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-humanllm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-humanllm}
+      POSTGRES_DB: ${POSTGRES_DB:-humanllm}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-humanllm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-humanllm}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-humanllm123}
+    volumes:
+      - miniodata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-humanllm}:${POSTGRES_PASSWORD:-humanllm}@db:5432/${POSTGRES_DB:-humanllm}
+      REDIS_URL: redis://redis:6379/0
+      QUEUE_BACKEND: redis
+      STORAGE_BACKEND: s3
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${MINIO_ROOT_USER:-humanllm}
+      S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-humanllm123}
+      S3_BUCKET: ${S3_BUCKET:-humanllm}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      AUTO_ASSIGN: "true"
+      TASK_TIMEOUT_SECONDS: "600"
+      COMMISSION_RATE: "0.15"
+      SEED_API_KEY: ${SEED_API_KEY:-sk-humanllm-demo-key-0001}
+      SEED_WORKER_USERNAME: ${SEED_WORKER_USERNAME:-worker1}
+      SEED_WORKER_PASSWORD: ${SEED_WORKER_PASSWORD:-worker123}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      BACKEND_HOST: backend
+      BACKEND_PORT: "8000"
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  pgdata:
+  miniodata:
