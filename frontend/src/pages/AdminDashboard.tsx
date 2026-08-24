@@ -360,7 +360,6 @@ function Models({ token }: { token: string }) {
       <div>
         <div className="page-head">
           <h1>模型</h1>
-          <p className="page-desc">管理可被调用的模型及其计费、并发与接单账号。</p>
         </div>
         <div className="tbl-wrap">
         <table className="tbl">
@@ -527,7 +526,6 @@ function ApiKeys({ token }: { token: string }) {
     <div>
       <div className="page-head">
         <h1>API 密钥</h1>
-        <p className="page-desc">为用户签发调用凭证，密钥仅创建时完整可见一次。</p>
       </div>
       <form className="form-col" style={{ maxWidth: 420, marginBottom: 18 }} onSubmit={create}>
         <h3>创建 API 密钥</h3>
@@ -622,7 +620,6 @@ function Tasks({ token }: { token: string }) {
     <div>
       <div className="page-head">
         <h1>任务</h1>
-        <p className="page-desc">查看所有调用任务及其生命周期状态，可取消进行中的任务。</p>
       </div>
       <div className="toolbar">
         <div className="spacer" />
@@ -696,7 +693,6 @@ function Usage({ token }: { token: string }) {
     <div>
       <div className="page-head">
         <h1>用量</h1>
-        <p className="page-desc">所有计费流水，包括调用扣费与接单账号收益。</p>
       </div>
       <div className="toolbar">
         <div className="spacer" />
@@ -754,7 +750,6 @@ function Logs({ token }: { token: string }) {
     <div>
       <div className="page-head">
         <h1>日志</h1>
-        <p className="page-desc">管理员操作与系统事件的审计记录。</p>
       </div>
       <div className="toolbar">
         <div className="spacer" />
@@ -993,7 +988,6 @@ function Workbench({ token }: { token: string }) {
     <div className="wb">
       <div className="page-head">
         <h1>接单工作台</h1>
-        <p className="page-desc">你就是模型本身：从右侧队列接单，或等待系统自动分配。</p>
       </div>
       <div className="wb-status">
         <span className={`dot ${connected ? "on" : "off"}`} />
@@ -1231,7 +1225,6 @@ function Users({ token }: { token: string }) {
     <div>
       <div className="page-head">
         <h1>用户</h1>
-        <p className="page-desc">管理后台账号、角色权限与接单收益，仅超级管理员可见。</p>
       </div>
       <div className="toolbar">
         <button className="primary" style={{ width: "auto" }} onClick={() => setShowCreate((v) => !v)}>
