@@ -821,6 +821,20 @@ select:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
+/* ---- 表单内 checkbox 标签：文字禁止内部折行，按标签边界换行 ---- */
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--text);
+  cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+  flex: none;
+  margin: 0;
+}
+
 /* ---- 收益明细面板（用户列表下方） ---- */
 .earn-panel {
   margin-top: 18px;

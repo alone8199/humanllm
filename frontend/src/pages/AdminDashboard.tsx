@@ -1258,7 +1258,7 @@ function Users({ token }: { token: string }) {
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>{g.label}</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                       {g.items.map((p) => (
-                        <label key={p.key} style={{ display: "flex", gap: 6, alignItems: "center", color: "var(--text)" }}>
+                        <label key={p.key} className="checkbox-label">
                           <input
                             type="checkbox"
                             checked={cPerms.includes(p.key)}
@@ -1296,7 +1296,7 @@ function Users({ token }: { token: string }) {
                     <div style={{ fontWeight: 600, marginBottom: 4 }}>{g.label}</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                       {g.items.map((p) => (
-                        <label key={p.key} style={{ display: "flex", gap: 6, alignItems: "center", color: "var(--text)" }}>
+                        <label key={p.key} className="checkbox-label">
                           <input
                             type="checkbox"
                             checked={ePerms.includes(p.key)}
@@ -1311,7 +1311,7 @@ function Users({ token }: { token: string }) {
               </div>
             </div>
           )}
-          <label style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--text)" }}>
+          <label className="checkbox-label">
             <input type="checkbox" checked={eActive} onChange={(e) => setEActive(e.target.checked)} />
             账号启用
           </label>
