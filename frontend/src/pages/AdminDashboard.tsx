@@ -1252,22 +1252,20 @@ function Users({ token }: { token: string }) {
           {cRole === "staff" && (
             <div>
               <div style={{ color: "var(--muted)", marginBottom: 6 }}>开放权限：</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="perm-grid">
                 {ALL_PERMISSION_GROUPS.map((g) => (
-                  <div key={g.group}>
-                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{g.label}</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-                      {g.items.map((p) => (
-                        <label key={p.key} className="checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={cPerms.includes(p.key)}
-                            onChange={() => setCPerms((l) => toggle(l, p.key))}
-                          />
-                          {p.label}
-                        </label>
-                      ))}
-                    </div>
+                  <div key={g.group} className="perm-group">
+                    <div className="group-title">{g.label}</div>
+                    {g.items.map((p) => (
+                      <label key={p.key} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={cPerms.includes(p.key)}
+                          onChange={() => setCPerms((l) => toggle(l, p.key))}
+                        />
+                        {p.label}
+                      </label>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -1290,22 +1288,20 @@ function Users({ token }: { token: string }) {
           {eRole === "staff" && (
             <div>
               <div style={{ color: "var(--muted)", marginBottom: 6 }}>开放权限：</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="perm-grid">
                 {ALL_PERMISSION_GROUPS.map((g) => (
-                  <div key={g.group}>
-                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{g.label}</div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-                      {g.items.map((p) => (
-                        <label key={p.key} className="checkbox-label">
-                          <input
-                            type="checkbox"
-                            checked={ePerms.includes(p.key)}
-                            onChange={() => setEPerms((l) => toggle(l, p.key))}
-                          />
-                          {p.label}
-                        </label>
-                      ))}
-                    </div>
+                  <div key={g.group} className="perm-group">
+                    <div className="group-title">{g.label}</div>
+                    {g.items.map((p) => (
+                      <label key={p.key} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={ePerms.includes(p.key)}
+                          onChange={() => setEPerms((l) => toggle(l, p.key))}
+                        />
+                        {p.label}
+                      </label>
+                    ))}
                   </div>
                 ))}
               </div>
