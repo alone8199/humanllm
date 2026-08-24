@@ -192,6 +192,8 @@ async def delete_user(
         raise HTTPException(404, "User not found")
     if u.id == actor.id:
         raise HTTPException(400, "You cannot delete yourself.")
+    if u.is_initial_admin:
+        raise HTTPException(400, "初始管理员账户不可删除。")
     if u.role == UserRole.super_admin:
         cnt = (
             await db.execute(

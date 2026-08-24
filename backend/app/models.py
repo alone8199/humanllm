@@ -42,22 +42,13 @@ class UserRole(str, enum.Enum):
 # Granular permission bits (module-level access). "users" management is
 # exclusive to super_admin and is not part of this list.
 ALL_PERMISSIONS = [
-    # 概览
-    "overview_view",   # 查看概览 / 仪表盘
-    # 接单工作台（WebSocket 真人接单，单一权限）
-    "workbench",       # 接单工作台
-    # 模型：查看 / 管理（管理含创建、编辑、删除）
-    "models_view",     # 查看模型
-    "models_manage",   # 模型管理（创建 / 编辑 / 删除）
-    # API 密钥
-    "apikeys_view",    # 查看 API 密钥
-    "apikeys_manage",  # API 密钥管理（创建 / 删除）
-    # 任务
-    "tasks_view",      # 查看任务
-    "tasks_manage",    # 任务管理（取消等）
-    # 用量 / 日志：仅查看
-    "usage_view",      # 查看用量
-    "logs_view",       # 查看日志
+    "overview",   # stats / dashboard landing
+    "workbench",  # human reply workbench (WebSocket worker)
+    "models",     # model CRUD
+    "apikeys",    # API key management
+    "tasks",      # task list / detail
+    "usage",      # usage records
+    "logs",       # event logs
 ]
 
 
@@ -112,6 +103,7 @@ class User(Base):
     # Bumped on every password change so previously issued JWTs are rejected
     # (force-logout / token revocation without a shared blacklist).
     token_version = Column(Integer, nullable=False, default=0)
+    is_initial_admin = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     api_keys = relationship("ApiKey", back_populates="user", cascade="all, delete-orphan")

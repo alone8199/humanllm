@@ -36,7 +36,7 @@ export default function AdminLogin() {
           <span className="auth-logo">
             <LogoIcon size={26} />
           </span>
-          <h1>HumanLLM</h1>
+          <h1>请调用我</h1>
         </div>
         <p className="tagline">管理后台 · 你是唯一的人类接单账号</p>
         <form onSubmit={submit}>

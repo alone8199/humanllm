@@ -241,6 +241,7 @@ export interface UserPublic {
   created_at: string;
   worker_status: string | null;
   worker_id: number | null;
+  is_initial_admin?: boolean;
 }
 
 export interface UserCreate {

@@ -95,6 +95,7 @@ async def seed_initial(db: AsyncSession) -> dict:
             role=UserRole.super_admin,
             permissions=None,  # full access
             balance_cents=1_000_00,
+            is_initial_admin=True,  # 根账户，不可删除
         )
         db.add(admin)
         await db.flush()

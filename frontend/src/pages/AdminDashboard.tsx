@@ -104,7 +104,7 @@ export default function AdminDashboard() {
             <LogoIcon size={24} />
           </span>
           <div className="side-brand-text">
-            <span className="side-title">HumanLLM</span>
+            <span className="side-title">请调用我</span>
             <span className="side-sub">管理后台 · 你就是模型</span>
           </div>
         </div>
@@ -1365,10 +1365,11 @@ function Users({ token }: { token: string }) {
                   </button>
                   <button
                     className="ghost danger"
-                    disabled={busyDel === u.id}
+                    disabled={busyDel === u.id || u.is_initial_admin}
+                    title={u.is_initial_admin ? "初始管理员账户不可删除" : undefined}
                     onClick={() => delUser(u)}
                   >
-                    {busyDel === u.id ? "删除中…" : "删除"}
+                    {busyDel === u.id ? "删除中…" : u.is_initial_admin ? "不可删" : "删除"}
                   </button>
                 </div>
               </td>

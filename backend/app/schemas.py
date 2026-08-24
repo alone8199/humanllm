@@ -158,6 +158,7 @@ class UserPublic(BaseModel):
     created_at: datetime
     worker_status: Optional[str] = None
     worker_id: Optional[int] = None
+    is_initial_admin: bool = False
 
 
 class UserCreate(BaseModel):
