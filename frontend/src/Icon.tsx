@@ -23,13 +23,14 @@ function base(size: number, strokeWidth: number, className?: string, style?: CSS
   };
 }
 
-// HumanLLM 品牌图标：人形 + 对话气泡（极简线性）
+// 请调用我 品牌图标：聊天气泡（微信风格，双气泡对话）
 export function LogoIcon({ size = 26, className, style, strokeWidth = 1.8 }: IconProps) {
   return (
     <svg {...base(size, strokeWidth, className, style)} aria-hidden="true">
-      <path d="M4 19v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1" />
-      <circle cx="11" cy="8" r="3.2" />
-      <path d="M16.5 3.5a3 3 0 0 1 0 5.2" />
+      {/* 左侧气泡（发出） */}
+      <path d="M21 11.5a8.38 8.38 0 0 1-9 8.3 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-4.1A8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z" />
+      {/* 右侧小气泡（接收） */}
+      <path d="M21 4v4a3 3 0 0 1-3 3H9l-2.5 2.5V11a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3z" opacity="0.55" />
     </svg>
   );
 }

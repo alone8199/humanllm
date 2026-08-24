@@ -105,7 +105,7 @@ export default function AdminDashboard() {
           </span>
           <div className="side-brand-text">
             <span className="side-title">请调用我</span>
-            <span className="side-sub">管理后台 · 你就是模型</span>
+            <span className="side-sub">管理后台</span>
           </div>
         </div>
 
@@ -251,7 +251,6 @@ function Overview({ stats }: { stats: AdminStats | null }) {
     <div>
       <div className="page-head">
         <h1>概览</h1>
-        <p className="page-desc">平台核心指标与最近 14 天的调用趋势。</p>
       </div>
 
       <div className="stat-grid">
