@@ -23,14 +23,19 @@ function base(size: number, strokeWidth: number, className?: string, style?: CSS
   };
 }
 
-// 请调用我 品牌图标：聊天气泡（微信风格，双气泡对话）
-export function LogoIcon({ size = 26, className, style, strokeWidth = 1.8 }: IconProps) {
+// 请调用我 品牌图标：API token（Material 风格，形状取自项目图标，随主题着色）
+export function LogoIcon({ size = 26, className, style }: IconProps) {
   return (
-    <svg {...base(size, strokeWidth, className, style)} aria-hidden="true">
-      {/* 左侧气泡（发出） */}
-      <path d="M21 11.5a8.38 8.38 0 0 1-9 8.3 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-4.1A8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z" />
-      {/* 右侧小气泡（接收） */}
-      <path d="M21 4v4a3 3 0 0 1-3 3H9l-2.5 2.5V11a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3z" opacity="0.55" />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 -960 960 960"
+      fill="currentColor"
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      <path d="M480-80 120-280v-400l360-200 360 200v400L480-80ZM364-590q23-24 53-37t63-13q33 0 63 13t53 37l120-67-236-131-236 131 120 67Zm76 396v-131q-54-14-87-57t-33-98q0-11 1-20.5t4-19.5l-125-70v263l240 133Zm96.5-229.5Q560-447 560-480t-23.5-56.5Q513-560 480-560t-56.5 23.5Q400-513 400-480t23.5 56.5Q447-400 480-400t56.5-23.5ZM520-194l240-133v-263l-125 70q3 10 4 19.5t1 20.5q0 55-33 98t-87 57v131Z" />
     </svg>
   );
 }
