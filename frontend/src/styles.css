@@ -754,12 +754,12 @@ textarea:focus {
 .perm-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 14px;
+  gap: 14px;
 }
 .perm-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 .perm-group > .group-title {
@@ -768,9 +768,8 @@ textarea:focus {
   font-weight: 500;
   margin-bottom: 2px;
 }
-.perm-group .checkbox-label {
+.perm-group .checkbox-text {
   font-size: 13px;
-  gap: 6px;
 }
 .form-col input,
 .form-col textarea {
@@ -843,18 +842,61 @@ select:focus {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
-/* ---- 表单内 checkbox 标签：文字禁止内部折行，按标签边界换行 ---- */
-.checkbox-label {
+/* ---- 自定义 Checkbox 组件 ---- */
+.checkbox-row {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  color: var(--text);
+  gap: 8px;
   cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  color: var(--text);
 }
-.checkbox-label input[type="checkbox"] {
-  flex: none;
+.checkbox-row.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
   margin: 0;
+}
+.checkbox-box {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.checkbox-box::after {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.checkbox-input:checked + .checkbox-box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.checkbox-input:checked + .checkbox-box::after {
+  opacity: 1;
+}
+.checkbox-input:focus-visible + .checkbox-box {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.checkbox-text {
+  font-size: 13px;
+  line-height: 1.2;
 }
 
 /* ---- 收益明细面板（用户列表下方） ---- */

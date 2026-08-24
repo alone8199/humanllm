@@ -63,6 +63,7 @@ import {
   LogoutIcon,
 } from "../Icon";
 import ThemeToggle from "../ThemeToggle";
+import { Checkbox } from "../Checkbox";
 
 type Tab = "overview" | "workbench" | "users" | "models" | "apikeys" | "tasks" | "usage" | "logs";
 
@@ -1251,20 +1252,18 @@ function Users({ token }: { token: string }) {
           </label>
           {cRole === "staff" && (
             <div>
-              <div style={{ color: "var(--muted)", marginBottom: 6 }}>开放权限：</div>
+              <div style={{ color: "var(--muted)", marginBottom: 8 }}>开放权限：</div>
               <div className="perm-grid">
                 {ALL_PERMISSION_GROUPS.map((g) => (
                   <div key={g.group} className="perm-group">
                     <div className="group-title">{g.label}</div>
                     {g.items.map((p) => (
-                      <label key={p.key} className="checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={cPerms.includes(p.key)}
-                          onChange={() => setCPerms((l) => toggle(l, p.key))}
-                        />
-                        {p.label}
-                      </label>
+                      <Checkbox
+                        key={p.key}
+                        checked={cPerms.includes(p.key)}
+                        onChange={() => setCPerms((l) => toggle(l, p.key))}
+                        label={p.label}
+                      />
                     ))}
                   </div>
                 ))}
@@ -1287,30 +1286,25 @@ function Users({ token }: { token: string }) {
           </label>
           {eRole === "staff" && (
             <div>
-              <div style={{ color: "var(--muted)", marginBottom: 6 }}>开放权限：</div>
+              <div style={{ color: "var(--muted)", marginBottom: 8 }}>开放权限：</div>
               <div className="perm-grid">
                 {ALL_PERMISSION_GROUPS.map((g) => (
                   <div key={g.group} className="perm-group">
                     <div className="group-title">{g.label}</div>
                     {g.items.map((p) => (
-                      <label key={p.key} className="checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={ePerms.includes(p.key)}
-                          onChange={() => setEPerms((l) => toggle(l, p.key))}
-                        />
-                        {p.label}
-                      </label>
+                      <Checkbox
+                        key={p.key}
+                        checked={ePerms.includes(p.key)}
+                        onChange={() => setEPerms((l) => toggle(l, p.key))}
+                        label={p.label}
+                      />
                     ))}
                   </div>
                 ))}
               </div>
             </div>
           )}
-          <label className="checkbox-label">
-            <input type="checkbox" checked={eActive} onChange={(e) => setEActive(e.target.checked)} />
-            账号启用
-          </label>
+          <Checkbox checked={eActive} onChange={setEActive} label="账号启用" />
           <input type="password" placeholder="重设密码（留空则不修改）" value={ePassword} onChange={(e) => setEPassword(e.target.value)} />
           <div style={{ display: "flex", gap: 10 }}>
             <button className="primary" type="submit">保存</button>
