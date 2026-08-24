@@ -8,7 +8,7 @@ Worker 会在工作台看到完整的 System / User 消息和所有附件（图�
 ```
 OpenAI SDK  ──►  POST /v1/chat/completions  ──►  任务队列  ──►  真人 Worker 工作台 ♪
                                                                       │
-OpenAI SDK  ◄──  OpenAI 兼容响应 (SSE/JSON)     ◄──────────────────┘
+OpenAI SDK  ◄──  OpenAI 兼容响应 (SSE/JSON)     ◄──────────────────────┘
 ```
 
 **这个项目里没有任何 AI 模型、没有任何 AI fallback、没有任何自动生成哦～** 每一个回复，都来自一个真真实实的人 (｡･ω･｡)
