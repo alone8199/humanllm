@@ -1,4 +1,4 @@
-# HumanLLM — full stack: backend (FastAPI) + frontend (React) +
+# 请调用我 — full stack: backend (FastAPI) + frontend (React) +
 # PostgreSQL + Redis + MinIO. No AI is used anywhere; human workers
 # answer every request.
 #

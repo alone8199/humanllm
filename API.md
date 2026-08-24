@@ -1,4 +1,4 @@
-# HumanLLM API 参考
+# 请调用我 API 参考
 
 所有接口的基础路径：`http://<host>:<port>`（默认后端 `8000`）。OpenAI 兼容接口挂载在 `/v1` 下。本文档中的 `Authorization: Bearer <token>` 既接受 **API Key**（`sk-...`，调用方用），也接受 **Worker/Admin JWT**（工作台与管理后台用）。
 
@@ -43,7 +43,7 @@
   "model": "human-default",
   "messages": [
     {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user",   "content": "用一句话介绍 HumanLLM。"}
+    {"role": "user",   "content": "用一句话介绍 请调用我。"}
   ],
   "stream": false,
   "stream_options": {"include_usage": true}

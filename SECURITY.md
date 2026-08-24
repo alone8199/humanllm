@@ -1,4 +1,4 @@
-# HumanLLM 安全加固清单 (Security Hardening)
+# 请调用我 安全加固清单 (Security Hardening)
 
 > 本次升级目标：**防爆破、防滥用、防令牌盗用、收紧默认配置**。
 > 所有新增能力均可通过环境变量开关，**默认开启**（除 HSTS 需显式 `FORCE_HSTS=true`）。

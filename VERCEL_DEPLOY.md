@@ -1,8 +1,8 @@
-# HumanLLM 部署指南
+# 请调用我 部署指南
 
 ## 架构：前后端不分离（单服务）
 
-HumanLLM 现在是**单服务**架构：FastAPI 后端同时托管前端静态页面（`frontend/dist`）和所有 API / WebSocket。因此：
+请调用我 现在是**单服务**架构：FastAPI 后端同时托管前端静态页面（`frontend/dist`）和所有 API / WebSocket。因此：
 
 - **前端的 IP / 域名本身就是 API 端点**
 - 不需要 CORS（同域）、不需要反代、不需要单独的前端部署平台

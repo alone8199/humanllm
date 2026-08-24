@@ -1,4 +1,4 @@
-# HumanLLM single-service image: builds the React frontend, then runs the
+# 请调用我 single-service image: builds the React frontend, then runs the
 # FastAPI backend which also serves the built SPA from /frontend/dist.
 # One container = frontend + API + WebSocket, no separation needed.
 

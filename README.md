@@ -1,32 +1,33 @@
-# HumanLLM
+# 请调用我 ✨
 
-> **Human is the Model. 完全不使用任何 AI —— 真人本身就是模型。**
+> **你就是模型，喵～ 完全不使用任何 AI —— 真人本身就是那个"模型"！**
 
-HumanLLM 是一个 **OpenAI API 兼容的真人回复服务**。当调用方用 OpenAI SDK 发起一次 `chat/completions` 请求时，请求不会送到任何大模型，而是进入一个**任务队列**，被分发给在线的**真人 Worker**；Worker 在工作台看到完整的 System/User 消息和所有附件（图片、文件、PDF 等），手动输入回复，回复以 **Server-Sent Events (SSE)** 或普通 JSON 的形式，原样以 OpenAI 兼容格式返回给调用方。
+**请调用我** 是一个 **OpenAI API 兼容的真人回复服务**（´・ω・）当调用方用 OpenAI SDK 发起一次 `chat/completions` 请求时，请求才不会送去什么大模型呢～而是乖乖进入一个**任务队列**，被分发给在线的**真人 Worker** ✧
+Worker 会在工作台看到完整的 System / User 消息和所有附件（图片、文件、PDF 等等），亲手敲下回复，再以 **Server-Sent Events (SSE)** 或普通 JSON 的形式，原样以 OpenAI 兼容格式送回给调用方～
 
 ```
-OpenAI SDK  ──►  POST /v1/chat/completions  ──►  任务队列  ──►  真人 Worker 工作台
+OpenAI SDK  ──►  POST /v1/chat/completions  ──►  任务队列  ──►  真人 Worker 工作台 ♪
                                                                       │
 OpenAI SDK  ◄──  OpenAI 兼容响应 (SSE/JSON)     ◄──────────────────┘
 ```
 
-**这个项目里没有任何 AI 模型、没有任何 AI fallback、没有任何自动生成。** 每一个回复都来自一个真实的人。
+**这个项目里没有任何 AI 模型、没有任何 AI fallback、没有任何自动生成哦～** 每一个回复，都来自一个真真实实的人 (｡･ω･｡)
 
 ---
 
-## 特性
+## 🌸 特性一览
 
 - **OpenAI 兼容 API**：`GET /v1/models`、`POST /v1/chat/completions`（`stream: true` SSE 支持）、Bearer API Key 鉴权、标准 OpenAI 错误格式。
 - **多模态接入**：文本、`image_url`、Base64/Data URL 图片、多图、PDF、TXT/JSON/CSV/DOCX/XLSX 文件，文件上传 API，工作台附件预览。
 - **真人 Worker 工作台**：注册/登录、在线/离线状态、任务队列、自动分配或抢单（grab）、查看完整 System Prompt / User Message / 附件、输入回复、实时发送、WebSocket 推送、超时/取消/重分配。
 - **模型体系**：`human-default` / `human-fast` / `human-expert` / `human-cn` / `human-en` 等，每个模型有 worker 池、技能、定价、并发上限。
-- **管理员后台**：用户、Worker、模型、API Key、任务、用量、余额、收入、日志。
+- **管理员后台**：用户、Worker、模型、API Key、任务、用量、余额、收入、日志（侧边栏布局，明亮/暗色主题随心切换♪）。
 - **计费**：按请求/字符/计时计费，记录 worker 收入 + 平台抽成（整数分，无浮点误差）。
-- **可部署**：FastAPI + PostgreSQL + Redis + MinIO + React，提供 Docker Compose 一键启动。
+- **可部署**：FastAPI + PostgreSQL + Redis + MinIO + React，提供 Docker Compose 一键启动 (´▽`)
 
 ---
 
-## 目录结构
+## 📁 目录结构
 
 ```
 humanllm/
@@ -34,7 +35,7 @@ humanllm/
 │   ├── app/
 │   │   ├── main.py          # 应用入口（lifespan: 迁移 → 启动 broker → 种子数据）
 │   │   ├── config.py        # 配置（数据库/队列/存储/JWT/计费）
-│   │   ├── models.py        # SQLAlchemy ORM
+│   │   ├── models.py        # SQLAlchemy ORM（含 is_initial_admin 根账户标记）
 │   │   ├── schemas.py       # Pydantic 请求/响应
 │   │   ├── security.py      # 密码哈希 / JWT / API Key
 │   │   ├── billing.py       # 预扣/结算/退款/抽成
@@ -44,9 +45,9 @@ humanllm/
 │   │   ├── openai_errors.py # OpenAI 兼容错误
 │   │   ├── routers/         # chat / models / files / worker / worker_auth / admin / health
 │   │   ├── migrate.py       # 幂等 SQL 迁移
-│   │   ├── seed.py          # 初始种子数据
+│   │   ├── seed.py          # 初始种子数据（根管理员从 .env 读取且不可删除）
 │   │   └── tests/           # pytest 套件（真实 uvicorn + 真实 WS）
-│   ├── migrations/0001_init.sql
+│   ├── migrations/0001_init.sql … 0007_initial_admin_flag.sql
 │   ├── scripts/             # demo_worker.py / run_e2e.py
 │   ├── requirements.txt
 │   └── Dockerfile
@@ -61,9 +62,9 @@ humanllm/
 
 ---
 
-## 快速开始（本地零依赖开发）
+## 🚀 快速开始（本地零依赖开发）
 
-无需 Docker。使用 SQLite + 本地存储 + 内存队列即可完整运行：
+无需 Docker 喵～ 使用 SQLite + 本地存储 + 内存队列即可完整运行：
 
 ```bash
 cd backend
@@ -77,7 +78,7 @@ export STORAGE_BACKEND=local
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-启动后自动执行迁移 + 种子数据（5 个模型、1 个管理员、1 个 demo 用户、1 个 demo worker、1 个 demo API Key）。
+启动后自动执行迁移 + 种子数据（5 个模型、1 个根管理员、1 个 demo 用户、1 个 demo worker、1 个 demo API Key）♪
 **前端构建后由 FastAPI 自动托管**：先 `cd frontend && npm install && npm run build`，再启动后端，浏览器访问 `http://localhost:8000/` 即工作台页面。
 
 > 默认账号密码统一为 `admin123`（由环境变量 `DEFAULT_PASSWORD` 控制）：Admin `admin`、Worker `worker1`。调用方 API Key 为 `sk-humanllm-demo-key-0001`。
@@ -96,18 +97,18 @@ cd backend
 python3 scripts/run_e2e.py --base http://localhost:8000 --api-key sk-humanllm-demo-key-0001
 ```
 
-`run_e2e.py` 会依次验证：非流式回复、流式 SSE 回复、带图片附件的回复。**所有回复都来自 demo worker（真人模拟），全程无任何 AI 调用。**
+`run_e2e.py` 会依次验证：非流式回复、流式 SSE 回复、带图片附件的回复。**所有回复都来自 demo worker（真人模拟），全程无任何 AI 调用 (｡･ω･｡)**
 
 ### 运行测试
 
 ```bash
 cd backend
-pytest -q          # 15 个测试：API/文件/计费/流程/超时，全部绿色
+pytest -q          # 15 个测试：API/文件/计费/流程/超时，全部绿色 ✧
 ```
 
 ---
 
-## 使用 Docker Compose（完整栈）
+## 🐳 使用 Docker Compose（完整栈）
 
 ```bash
 cp .env.example .env
@@ -121,14 +122,14 @@ docker compose up --build
 
 ---
 
-## 调用示例（OpenAI SDK）
+## 💬 调用示例（OpenAI SDK）
 
 ```python
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="sk-humanllm-demo-key-0001",     # 你的 HumanLLM API Key
-    base_url="http://localhost:8000/v1",       # 指向 HumanLLM，而非 OpenAI
+    api_key="sk-humanllm-demo-key-0001",     # 你的 请调用我 API Key
+    base_url="http://localhost:8000/v1",       # 指向 请调用我，而非 OpenAI
 )
 
 # 非流式
@@ -136,7 +137,7 @@ resp = client.chat.completions.create(
     model="human-default",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user",   "content": "用一句话介绍 HumanLLM。"},
+        {"role": "user",   "content": "用一句话介绍 请调用我。"},
     ],
     stream=False,
 )
@@ -164,7 +165,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ---
 
-## 真人 Worker 怎么工作
+## 🎀 真人 Worker 怎么工作
 
 1. Worker 在 `/worker/login` 登录，拿到 JWT。
 2. Worker 打开工作台页面（`/worker`），通过 `ws://host/ws/worker?token=...` 建立 WebSocket 并保持在线。
@@ -176,7 +177,7 @@ curl http://localhost:8000/v1/chat/completions \
 
 ---
 
-## 默认凭据（仅 demo / 本地）
+## 🔑 默认凭据（仅 demo / 本地）
 
 | 角色 | 用户名 | 密码 / Key |
 |------|--------|------------|
@@ -184,11 +185,13 @@ curl http://localhost:8000/v1/chat/completions \
 | Worker | `worker1` | `worker123` |
 | Admin | `admin` | `admin123` |
 
-生产环境请通过环境变量覆盖这些种子值（见 `.env.example`）。
+生产环境请通过环境变量覆盖这些种子值（见 `.env.example`）♪
+
+> 根管理员账户从 `.env` 的 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 读取，且被标记为初始管理员，**不可删除**（即使存在其他 super_admin 也不能删掉根账户哦～）。
 
 ---
 
-## 计费说明
+## 💰 计费说明
 
 - 所有金额以**整数分（cents）**存储，避免浮点误差。
 - 创建任务时按模型定价**预扣（preauth hold）**：`请求费 + 字符费 + 计时费`。
@@ -197,6 +200,10 @@ curl http://localhost:8000/v1/chat/completions \
 
 ---
 
-## 绝对无 AI 声明
+## 🚫 绝对无 AI 声明
 
-HumanLLM 不调用任何大语言模型、不集成任何 AI 推理服务、不包含任何自动文本生成逻辑。所有 `assistant` 角色的回复内容，100% 来自真人 Worker 通过工作台手动输入并提交的文本。这是本项目的核心设计约束，而非缺省行为。
+请调用我 不调用任何大语言模型、不集成任何 AI 推理服务、不包含任何自动文本生成逻辑。所有 `assistant` 角色的回复内容，100% 来自真人 Worker 通过工作台手动输入并提交的文本。这是本项目的核心设计约束，而非缺省行为 (´・ω・)
+
+---
+
+<p align="center">✧ 召唤真人，而不是模型 ✧</p>
