@@ -128,6 +128,7 @@ export interface ApiKeyRow {
   id: number;
   name: string | null;
   key_prefix: string;
+  full_key: string | null;
   user_id: number;
   is_active: boolean;
   last_used_at: string | null;

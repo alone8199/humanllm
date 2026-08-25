@@ -540,7 +540,7 @@ function ApiKeys({ token }: { token: string }) {
         </button>
         {created && (
           <div className="info">
-            密钥已创建（仅显示一次）：<br />
+            密钥已创建：<br />
             <code style={{ wordBreak: "break-all" }}>{created}</code>
           </div>
         )}
@@ -553,7 +553,7 @@ function ApiKeys({ token }: { token: string }) {
           <tr>
             <th>ID</th>
             <th>名称</th>
-            <th>前缀</th>
+            <th>密钥</th>
             <th>用户</th>
             <th>启用</th>
             <th>最后使用</th>
@@ -566,7 +566,9 @@ function ApiKeys({ token }: { token: string }) {
             <tr key={k.id}>
               <td>{k.id}</td>
               <td>{k.name || "—"}</td>
-              <td>{k.key_prefix}</td>
+              <td className="mono wrap" style={{ minWidth: 280 }}>
+                {k.full_key ?? k.key_prefix}
+              </td>
               <td>{k.user_id}</td>
               <td>{k.is_active ? "✓" : "✗"}</td>
               <td>{k.last_used_at ? new Date(k.last_used_at).toLocaleString() : "—"}</td>
