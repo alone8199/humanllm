@@ -8,7 +8,7 @@
 ```
 OpenAI SDK  →  POST /v1/chat/completions  →  任务队列  →  Worker 工作台
                                                          │
-OpenAI SDK  ←  SSE / JSON  ←──────────────────────────┘
+OpenAI SDK  ←  SSE / JSON  ←─────────────────────────────┘
 ```
 
 ---
@@ -175,7 +175,6 @@ curl http://localhost:8000/v1/chat/completions \
 
 ## Contributors
 
-> 谢谢这一群「模型」陪我写代码 — 虽然最终回复的是人 😉
 
 <p align="center">
   <a href="https://www.deepseek.com" title="DeepSeek"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg" width="40" height="40" alt="DeepSeek" /></a>&nbsp;&nbsp;
