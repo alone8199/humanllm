@@ -170,3 +170,22 @@ curl http://localhost:8000/v1/chat/completions \
 ```
 
 更多接口说明见 [API.md](./API.md)。
+
+---
+
+## 创作者
+
+<table>
+  <tr>
+    <td align="center" width="120">
+      <img src="https://avatars.githubusercontent.com/u/166632428?s=64&v=4" width="48" height="48" alt="Grok" style="border-radius: 50%;" /><br />
+      <b><a href="https://x.ai">Grok</a></b><br />
+      <sub>xAI</sub>
+    </td>
+    <td align="center" width="120">
+      <img src="https://www.workbuddy.cn/favicon.ico" width="48" height="48" alt="WorkBuddy" /><br />
+      <b><a href="https://www.workbuddy.cn">WorkBuddy</a></b><br />
+      <sub>腾讯</sub>
+    </td>
+  </tr>
+</table>
