@@ -2,7 +2,7 @@
 
 > **你就是模型，喵～ 完全不使用任何 AI —— 真人本身就是那个"模型"！**
 
-**请调用我** 是一个 **OpenAI API 兼容的真人回复服务**（´・ω・）当调用方用 OpenAI SDK 发起一次 `chat/completions` 请求时，请求才不会送去什么大模型呢～而是乖乖进入一个**任务队列**，被分发给在线的**真人 Worker** ✧
+**请调用我** 是一个 **OpenAI API 兼容的真人回复服务**（´・ω・）当调用方用 OpenAI SDK 发起一次 `chat/completions` 请求时，请求不会送去任何大模型，而是乖乖进入一个**任务队列**，被分发给在线的**真人 Worker** ✧
 Worker 会在工作台看到完整的 System / User 消息和所有附件（图片、文件、PDF 等等），亲手敲下回复，再以 **Server-Sent Events (SSE)** 或普通 JSON 的形式，原样以 OpenAI 兼容格式送回给调用方～
 
 ```
@@ -23,18 +23,18 @@ OpenAI SDK  ◄──  OpenAI 兼容响应 (SSE/JSON)     ◄──────�
 - **模型体系**：`human-default` / `human-fast` / `human-expert` / `human-cn` / `human-en` 等，每个模型有 worker 池、技能、定价、并发上限。
 - **管理员后台**：用户、Worker、模型、API Key、任务、用量、余额、收入、日志（侧边栏布局，明亮/暗色主题随心切换♪）。
 - **计费**：按请求/字符/计时计费，记录 worker 收入 + 平台抽成（整数分，无浮点误差）。
-- **可部署**：FastAPI + PostgreSQL + Redis + MinIO + React，提供 Docker Compose 一键启动 (´▽`)
+- **可部署**：FastAPI + React（前端 `npm run build` 后由后端 `StaticFiles` 同源托管），支持 SQLite + 本地存储 + 内存队列零依赖运行，也提供 Docker Compose 完整栈 (´▽`)
 
 ---
 
 ## 📁 目录结构
 
 ```
-humanllm/
+请调用我/
 ├── backend/                 # FastAPI 后端
 │   ├── app/
 │   │   ├── main.py          # 应用入口（lifespan: 迁移 → 启动 broker → 种子数据）
-│   │   ├── config.py        # 配置（数据库/队列/存储/JWT/计费）
+│   │   ├── config.py        # 配置（数据库/队列/存储/JWT/计费，从环境变量读取）
 │   │   ├── models.py        # SQLAlchemy ORM（含 is_initial_admin 根账户标记）
 │   │   ├── schemas.py       # Pydantic 请求/响应
 │   │   ├── security.py      # 密码哈希 / JWT / API Key
@@ -42,23 +42,40 @@ humanllm/
 │   │   ├── broker.py        # 任务通道 + 事件总线（memory/redis）
 │   │   ├── dispatch.py      # 自动分配 / 抢单 / 断线重分配
 │   │   ├── storage.py       # 本地 / S3(MinIO) 存储抽象
+│   │   ├── ratelimit.py     # 速率限制
 │   │   ├── openai_errors.py # OpenAI 兼容错误
+│   │   ├── middleware.py    # 请求中间件
+│   │   ├── tools.py         # 工具函数
 │   │   ├── routers/         # chat / models / files / worker / worker_auth / admin / health
 │   │   ├── migrate.py       # 幂等 SQL 迁移
 │   │   ├── seed.py          # 初始种子数据（根管理员从 .env 读取且不可删除）
+│   │   ├── dispatch.py
 │   │   └── tests/           # pytest 套件（真实 uvicorn + 真实 WS）
 │   ├── migrations/0001_init.sql … 0007_initial_admin_flag.sql
-│   ├── scripts/             # demo_worker.py / run_e2e.py
+│   ├── scripts/             # demo_worker.py / run_e2e.py / verify_full.py
 │   ├── requirements.txt
+│   ├── pytest.ini
 │   └── Dockerfile
-├── frontend/                # React + TypeScript 工作台 & 管理后台
-│   ├── src/pages/WorkerWorkbench.tsx
-│   ├── src/pages/AdminDashboard.tsx
-│   └── ...
-├── docker-compose.yml
+├── frontend/                # React + TypeScript + Vite 管理后台 & 登录页
+│   ├── src/
+│   │   ├── pages/AdminDashboard.tsx   # 管理后台（侧边栏：概览/工作台/用户/模型/密钥/任务/用量/日志）
+│   │   ├── pages/AdminLogin.tsx       # 管理员登录
+│   │   ├── App.tsx / main.tsx
+│   │   ├── api.ts / ws.ts             # API 客户端 / Worker WebSocket
+│   │   ├── Icon.tsx / Checkbox.tsx / ThemeToggle.tsx
+│   │   └── styles.css
+│   ├── public/favicon.svg / logo.svg
+│   ├── index.html / vite.config.ts / tsconfig.json
+│   ├── Dockerfile / nginx.conf.template / vercel.json
+│   └── package.json
+├── docker-compose.yml       # 完整栈：FastAPI + PostgreSQL + Redis + MinIO + React
+├── start.sh                 # 服务器一键启动脚本（uvicorn + 前端静态托管）
 ├── .env.example
-└── README.md / API.md
+├── API.md                   # OpenAI 兼容接口详细说明
+└── README.md
 ```
+
+> 说明：Worker 工作台由后端通过 `StaticFiles` 同源托管前端 `dist/`（`/admin` 走管理后台，`/login` 走登录页）。`backend/storage/` 为运行时上传附件目录，已加入 `.gitignore`，不入库。
 
 ---
 
@@ -78,10 +95,11 @@ export STORAGE_BACKEND=local
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-启动后自动执行迁移 + 种子数据（5 个模型、1 个根管理员、1 个 demo 用户、1 个 demo worker、1 个 demo API Key）♪
-**前端构建后由 FastAPI 自动托管**：先 `cd frontend && npm install && npm run build`，再启动后端，浏览器访问 `http://localhost:8000/` 即工作台页面。
+启动后自动执行迁移 + 种子数据（模型、根管理员、demo 用户、demo worker、demo API Key）♪
+**前端构建后由 FastAPI 自动托管**：先 `cd frontend && npm install && npm run build`，再启动后端，浏览器访问 `http://localhost:8000/` 即为管理后台页面。
 
-> 默认账号密码统一为 `admin123`（由环境变量 `DEFAULT_PASSWORD` 控制）：Admin `admin`、Worker `worker1`。调用方 API Key 为 `sk-humanllm-demo-key-0001`。
+> 默认账号密码由环境变量控制（见 `.env.example`）：根管理员从 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 读取，demo worker 等种子值可覆盖。
+> 根管理员账户被标记为初始管理员，**不可删除**（即使存在其他 super_admin 也不能删掉根账户哦～）。
 
 ### 一键验证完整链路（OpenAI SDK → 真人 → 响应）
 
@@ -90,11 +108,11 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```bash
 # 终端 A：启动 demo 真人 worker（连接到工作台 WebSocket）
 cd backend
-python3 scripts/demo_worker.py --base http://localhost:8000 --username worker1 --password admin123
+python3 scripts/demo_worker.py --base http://localhost:8000 --username worker1 --password <worker密码>
 
 # 终端 B：用 OpenAI SDK 发起请求（会阻塞直到真人回复）
 cd backend
-python3 scripts/run_e2e.py --base http://localhost:8000 --api-key sk-humanllm-demo-key-0001
+python3 scripts/run_e2e.py --base http://localhost:8000 --api-key <your-api-key>
 ```
 
 `run_e2e.py` 会依次验证：非流式回复、流式 SSE 回复、带图片附件的回复。**所有回复都来自 demo worker（真人模拟），全程无任何 AI 调用 (｡･ω･｡)**
@@ -103,7 +121,7 @@ python3 scripts/run_e2e.py --base http://localhost:8000 --api-key sk-humanllm-de
 
 ```bash
 cd backend
-pytest -q          # 15 个测试：API/文件/计费/流程/超时，全部绿色 ✧
+pytest -q          # pytest 套件：API / 文件 / 计费 / 流程 / 超时
 ```
 
 ---
@@ -113,8 +131,7 @@ pytest -q          # 15 个测试：API/文件/计费/流程/超时，全部绿�
 ```bash
 cp .env.example .env
 docker compose up --build
-# 前端:  http://localhost:5173
-# 后端:  http://localhost:8000   (OpenAI 兼容 API)
+# 后端:  http://localhost:8000   (OpenAI 兼容 API + 前端静态托管)
 # MinIO 控制台: http://localhost:9001
 ```
 
@@ -128,8 +145,8 @@ docker compose up --build
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="sk-humanllm-demo-key-0001",     # 你的 请调用我 API Key
-    base_url="http://localhost:8000/v1",       # 指向 请调用我，而非 OpenAI
+    api_key="<your-api-key>",           # 你的 请调用我 API Key
+    base_url="http://localhost:8000/v1", # 指向 请调用我，而非 OpenAI
 )
 
 # 非流式
@@ -158,7 +175,7 @@ for chunk in stream:
 
 ```bash
 curl http://localhost:8000/v1/chat/completions \
-  -H "Authorization: Bearer sk-humanllm-demo-key-0001" \
+  -H "Authorization: Bearer <your-api-key>" \
   -H "Content-Type: application/json" \
   -d '{"model":"human-default","messages":[{"role":"user","content":"你好"}],"stream":false}'
 ```
@@ -168,7 +185,7 @@ curl http://localhost:8000/v1/chat/completions \
 ## 🎀 真人 Worker 怎么工作
 
 1. Worker 在 `/worker/login` 登录，拿到 JWT。
-2. Worker 打开工作台页面（`/worker`），通过 `ws://host/ws/worker?token=...` 建立 WebSocket 并保持在线。
+2. Worker 打开工作台页面，通过 `ws://host/ws/worker?token=...` 建立 WebSocket 并保持在线。
 3. 调用方发来请求 → 后端创建 Task → 自动分配给最闲的在线 Worker（或进入抢单池）。
 4. Worker 的 WebSocket 收到 `task_assigned`，工作台展示完整消息 + 附件预览。
 5. Worker 手动输入回复，点「发送片段」逐块回传（SSE 实时推给调用方），点「完成」提交最终回复。
@@ -179,15 +196,11 @@ curl http://localhost:8000/v1/chat/completions \
 
 ## 🔑 默认凭据（仅 demo / 本地）
 
-| 角色 | 用户名 | 密码 / Key |
-|------|--------|------------|
-| API Key | — | `sk-humanllm-demo-key-0001` |
-| Worker | `worker1` | `worker123` |
-| Admin | `admin` | `admin123` |
+生产环境请通过环境变量覆盖所有种子值（见 `.env.example`）♪
 
-生产环境请通过环境变量覆盖这些种子值（见 `.env.example`）♪
-
-> 根管理员账户从 `.env` 的 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 读取，且被标记为初始管理员，**不可删除**（即使存在其他 super_admin 也不能删掉根账户哦～）。
+> **根管理员**：从 `.env` 的 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 读取，标记为初始管理员，**不可删除**。
+> **API Key**：创建后在管理后台「API 密钥」页**直接显示完整密钥**，可随时复制（不再仅显示一次）。
+> **Worker**：`scripts/demo_worker.py` 用 `--username` / `--password` 登录即可模拟真人接单。
 
 ---
 
