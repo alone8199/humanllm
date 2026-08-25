@@ -1,89 +1,43 @@
-# 请调用我 ✨
+# HumanLLM
 
-> **你就是模型，喵～ 完全不使用任何 AI —— 真人本身就是那个"模型"！**
+**OpenAI-compatible API. Zero AI. 100% real humans.**
 
-**请调用我** 是一个 **OpenAI API 兼容的真人回复服务**（´・ω・）当调用方用 OpenAI SDK 发起一次 `chat/completions` 请求时，请求不会送去任何大模型，而是乖乖进入一个**任务队列**，被分发给在线的**真人 Worker** ✧
-Worker 会在工作台看到完整的 System / User 消息和所有附件（图片、文件、PDF 等等），亲手敲下回复，再以 **Server-Sent Events (SSE)** 或普通 JSON 的形式，原样以 OpenAI 兼容格式送回给调用方～
+Drop-in replacement for `chat/completions` — except the model on the other end is an actual person sitting at a workbench, reading your prompt (and images/PDFs), and typing the reply themselves.
 
 ```
-OpenAI SDK  ──►  POST /v1/chat/completions  ──►  任务队列  ──►  真人 Worker 工作台 ♪
-                                                                      │
-OpenAI SDK  ◄──  OpenAI 兼容响应 (SSE/JSON)     ◄──────────────────────┘
+OpenAI SDK  →  POST /v1/chat/completions  →  task queue  →  human worker
+                                                              │
+OpenAI SDK  ←  SSE / JSON (OpenAI format)  ←──────────────────┘
 ```
 
-**这个项目里没有任何 AI 模型、没有任何 AI fallback、没有任何自动生成哦～** 每一个回复，都来自一个真真实实的人 (｡･ω･｡)
+No LLMs. No fallbacks. No auto-generation. Every `assistant` message comes from a real human.
 
 ---
 
-## 🌸 特性一览
+## Why?
 
-- **OpenAI 兼容 API**：`GET /v1/models`、`POST /v1/chat/completions`（`stream: true` SSE 支持）、Bearer API Key 鉴权、标准 OpenAI 错误格式。
-- **多模态接入**：文本、`image_url`、Base64/Data URL 图片、多图、PDF、TXT/JSON/CSV/DOCX/XLSX 文件，文件上传 API，工作台附件预览。
-- **真人 Worker 工作台**：注册/登录、在线/离线状态、任务队列、自动分配或抢单（grab）、查看完整 System Prompt / User Message / 附件、输入回复、实时发送、WebSocket 推送、超时/取消/重分配。
-- **模型体系**：`human-default` / `human-fast` / `human-expert` / `human-cn` / `human-en` 等，每个模型有 worker 池、技能、定价、并发上限。
-- **管理员后台**：用户、Worker、模型、API Key、任务、用量、余额、收入、日志（侧边栏布局，明亮/暗色主题随心切换♪）。
-- **计费**：按请求/字符/计时计费，记录 worker 收入 + 平台抽成（整数分，无浮点误差）。
-- **可部署**：FastAPI + React（前端 `npm run build` 后由后端 `StaticFiles` 同源托管），支持 SQLite + 本地存储 + 内存队列零依赖运行，也提供 Docker Compose 完整栈 (´▽`)
+Sometimes you want a human in the loop — for judgment, creativity, domain expertise, or just because "AI said so" isn't good enough. HumanLLM turns that into a drop-in API so your existing OpenAI client code keeps working.
 
 ---
 
-## 📁 目录结构
+## Features
 
-```
-请调用我/
-├── backend/                 # FastAPI 后端
-│   ├── app/
-│   │   ├── main.py          # 应用入口（lifespan: 迁移 → 启动 broker → 种子数据）
-│   │   ├── config.py        # 配置（数据库/队列/存储/JWT/计费，从环境变量读取）
-│   │   ├── models.py        # SQLAlchemy ORM（含 is_initial_admin 根账户标记）
-│   │   ├── schemas.py       # Pydantic 请求/响应
-│   │   ├── security.py      # 密码哈希 / JWT / API Key
-│   │   ├── billing.py       # 预扣/结算/退款/抽成
-│   │   ├── broker.py        # 任务通道 + 事件总线（memory/redis）
-│   │   ├── dispatch.py      # 自动分配 / 抢单 / 断线重分配
-│   │   ├── storage.py       # 本地 / S3(MinIO) 存储抽象
-│   │   ├── ratelimit.py     # 速率限制
-│   │   ├── openai_errors.py # OpenAI 兼容错误
-│   │   ├── middleware.py    # 请求中间件
-│   │   ├── tools.py         # 工具函数
-│   │   ├── routers/         # chat / models / files / worker / worker_auth / admin / health
-│   │   ├── migrate.py       # 幂等 SQL 迁移
-│   │   ├── seed.py          # 初始种子数据（根管理员从 .env 读取且不可删除）
-│   │   ├── dispatch.py
-│   │   └── tests/           # pytest 套件（真实 uvicorn + 真实 WS）
-│   ├── migrations/0001_init.sql … 0007_initial_admin_flag.sql
-│   ├── scripts/             # demo_worker.py / run_e2e.py / verify_full.py
-│   ├── requirements.txt
-│   ├── pytest.ini
-│   └── Dockerfile
-├── frontend/                # React + TypeScript + Vite 管理后台 & 登录页
-│   ├── src/
-│   │   ├── pages/AdminDashboard.tsx   # 管理后台（侧边栏：概览/工作台/用户/模型/密钥/任务/用量/日志）
-│   │   ├── pages/AdminLogin.tsx       # 管理员登录
-│   │   ├── App.tsx / main.tsx
-│   │   ├── api.ts / ws.ts             # API 客户端 / Worker WebSocket
-│   │   ├── Icon.tsx / Checkbox.tsx / ThemeToggle.tsx
-│   │   └── styles.css
-│   ├── public/favicon.svg / logo.svg
-│   ├── index.html / vite.config.ts / tsconfig.json
-│   ├── Dockerfile / nginx.conf.template / vercel.json
-│   └── package.json
-├── docker-compose.yml       # 完整栈：FastAPI + PostgreSQL + Redis + MinIO + React
-├── start.sh                 # 服务器一键启动脚本（uvicorn + 前端静态托管）
-├── .env.example
-├── API.md                   # OpenAI 兼容接口详细说明
-└── README.md
-```
-
-> 说明：Worker 工作台由后端通过 `StaticFiles` 同源托管前端 `dist/`（`/admin` 走管理后台，`/login` 走登录页）。`backend/storage/` 为运行时上传附件目录，已加入 `.gitignore`，不入库。
+| Area | What you get |
+|------|--------------|
+| **API** | `GET /v1/models`, `POST /v1/chat/completions` (streaming SSE), Bearer keys, standard OpenAI error shapes |
+| **Multimodal** | Text, `image_url`, base64/data-URL images, multi-image, PDF / TXT / JSON / CSV / DOCX / XLSX + file upload API |
+| **Workers** | Register/login, online/offline, auto-dispatch or grab queue, full system+user+attachments view, chunked replies over WebSocket |
+| **Models** | `human-default`, `human-fast`, `human-expert`, `human-cn`, `human-en` … configurable pools, skills, pricing, concurrency, timeouts |
+| **Admin** | Users, workers, models, API keys, tasks, usage, balance, revenue, logs — light/dark theme |
+| **Billing** | Per-request / per-char / per-minute preauth + settle. Worker payout + platform cut. All amounts in integer cents |
+| **Stack** | FastAPI · PostgreSQL/SQLite · Redis · MinIO · React. Docker Compose one-liner or pure local (no Docker needed) |
 
 ---
 
-## 🚀 快速开始（本地零依赖开发）
-
-无需 Docker 喵～ 使用 SQLite + 本地存储 + 内存队列即可完整运行：
+## Quick start (local, zero infra)
 
 ```bash
+# backend
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
@@ -95,75 +49,78 @@ export STORAGE_BACKEND=local
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-启动后自动执行迁移 + 种子数据（模型、根管理员、demo 用户、demo worker、demo API Key）♪
-**前端构建后由 FastAPI 自动托管**：先 `cd frontend && npm install && npm run build`，再启动后端，浏览器访问 `http://localhost:8000/` 即为管理后台页面。
+Migrations + seed data run automatically (models, root admin, demo user/worker/API key).
 
-> 默认账号密码由环境变量控制（见 `.env.example`）：根管理员从 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 读取，demo worker 等种子值可覆盖。
-> 根管理员账户被标记为初始管理员，**不可删除**（即使存在其他 super_admin 也不能删掉根账户哦～）。
-
-### 一键验证完整链路（OpenAI SDK → 真人 → 响应）
-
-另开终端，启动一个**真人 Worker 模拟器**，然后用官方 OpenAI SDK 发起请求：
+Build the frontend so FastAPI can serve it:
 
 ```bash
-# 终端 A：启动 demo 真人 worker（连接到工作台 WebSocket）
-cd backend
-python3 scripts/demo_worker.py --base http://localhost:8000 --username worker1 --password <worker密码>
-
-# 终端 B：用 OpenAI SDK 发起请求（会阻塞直到真人回复）
-cd backend
-python3 scripts/run_e2e.py --base http://localhost:8000 --api-key <your-api-key>
+cd frontend && npm install && npm run build
 ```
 
-`run_e2e.py` 会依次验证：非流式回复、流式 SSE 回复、带图片附件的回复。**所有回复都来自 demo worker（真人模拟），全程无任何 AI 调用 (｡･ω･｡)**
+Open `http://localhost:8000/` → workbench + admin UI.
 
-### 运行测试
+### One-command end-to-end check
 
 ```bash
+# terminal A — fake human worker
 cd backend
-pytest -q          # pytest 套件：API / 文件 / 计费 / 流程 / 超时
+python3 scripts/demo_worker.py --base http://localhost:8000 \
+  --username worker1 --password admin123
+
+# terminal B — real OpenAI SDK call (blocks until the "human" replies)
+python3 scripts/run_e2e.py --base http://localhost:8000 \
+  --api-key sk-humanllm-demo-key-0001
+```
+
+Tests:
+
+```bash
+cd backend && pytest -q   # API, files, billing, flow, timeout
 ```
 
 ---
 
-## 🐳 使用 Docker Compose（完整栈）
+## Docker Compose (full stack)
 
 ```bash
 cp .env.example .env
 docker compose up --build
-# 后端:  http://localhost:8000   (OpenAI 兼容 API + 前端静态托管)
-# MinIO 控制台: http://localhost:9001
 ```
 
-后端通过 `QUEUE_BACKEND=redis`、`STORAGE_BACKEND=s3` 接入 Redis 与 MinIO；前端经 nginx 代理 `/api` 与 `/ws` 到后端。
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend (OpenAI API) | http://localhost:8000 |
+| MinIO console | http://localhost:9001 |
+
+Uses Redis + S3 (MinIO) under the hood.
 
 ---
 
-## 💬 调用示例（OpenAI SDK）
+## Call it like OpenAI
 
 ```python
 from openai import OpenAI
 
 client = OpenAI(
-    api_key="<your-api-key>",           # 你的 请调用我 API Key
-    base_url="http://localhost:8000/v1", # 指向 请调用我，而非 OpenAI
+    api_key="sk-humanllm-demo-key-0001",
+    base_url="http://localhost:8000/v1",
 )
 
-# 非流式
+# non-streaming
 resp = client.chat.completions.create(
     model="human-default",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user",   "content": "用一句话介绍 请调用我。"},
+        {"role": "user", "content": "One sentence: what is HumanLLM?"},
     ],
-    stream=False,
 )
 print(resp.choices[0].message.content)
 
-# 流式（真人逐块回复，SSE）
+# streaming (human types chunk-by-chunk)
 stream = client.chat.completions.create(
     model="human-default",
-    messages=[{"role": "user", "content": "你好"}],
+    messages=[{"role": "user", "content": "Hi"}],
     stream=True,
 )
 for chunk in stream:
@@ -171,52 +128,80 @@ for chunk in stream:
         print(chunk.choices[0].delta.content, end="", flush=True)
 ```
 
-### curl
-
 ```bash
 curl http://localhost:8000/v1/chat/completions \
-  -H "Authorization: Bearer <your-api-key>" \
+  -H "Authorization: Bearer sk-humanllm-demo-key-0001" \
   -H "Content-Type: application/json" \
   -d '{"model":"human-default","messages":[{"role":"user","content":"你好"}],"stream":false}'
 ```
 
 ---
 
-## 🎀 真人 Worker 怎么工作
+## How a human worker actually works
 
-1. Worker 在 `/worker/login` 登录，拿到 JWT。
-2. Worker 打开工作台页面，通过 `ws://host/ws/worker?token=...` 建立 WebSocket 并保持在线。
-3. 调用方发来请求 → 后端创建 Task → 自动分配给最闲的在线 Worker（或进入抢单池）。
-4. Worker 的 WebSocket 收到 `task_assigned`，工作台展示完整消息 + 附件预览。
-5. Worker 手动输入回复，点「发送片段」逐块回传（SSE 实时推给调用方），点「完成」提交最终回复。
-6. 后端结算：释放预扣、给 Worker 记收入、给平台记抽成，返回 OpenAI 兼容响应。
-7. 若超时/Worker 断线，任务自动退款并（在自动分配模式下）重分配给其他在线 Worker。
-
----
-
-## 🔑 默认凭据（仅 demo / 本地）
-
-生产环境请通过环境变量覆盖所有种子值（见 `.env.example`）♪
-
-> **根管理员**：从 `.env` 的 `ADMIN_USERNAME` / `ADMIN_PASSWORD` 读取，标记为初始管理员，**不可删除**。
-> **API Key**：创建后在管理后台「API 密钥」页**直接显示完整密钥**，可随时复制（不再仅显示一次）。
-> **Worker**：`scripts/demo_worker.py` 用 `--username` / `--password` 登录即可模拟真人接单。
+1. Worker logs in → gets JWT  
+2. Opens workbench, keeps WebSocket alive (`/ws/worker?token=…`)  
+3. Incoming request creates a Task → auto-assigned (or grab pool)  
+4. Worker sees full messages + attachment previews  
+5. Types reply, sends chunks (streamed to the caller as SSE), hits **Done**  
+6. Backend settles: release preauth, credit worker, take platform cut  
+7. Timeout / disconnect → refund + re-dispatch (auto mode)
 
 ---
 
-## 💰 计费说明
+## Demo credentials (local only)
 
-- 所有金额以**整数分（cents）**存储，避免浮点误差。
-- 创建任务时按模型定价**预扣（preauth hold）**：`请求费 + 字符费 + 计时费`。
-- 完成后**结算**：实际费用 = `min(回复字符, 上限)` 计费；多扣部分**退还**用户；Worker 获得 `实际费用 × (1 - 抽成率)`；平台获得抽成。
-- `usage` 对象里的 token 数为 `字符数 / 4` 的估算（仅为兼容 OpenAI 格式，不代表任何 AI 推理）。
+| Role | Value |
+|------|--------|
+| API Key | `sk-humanllm-demo-key-0001` |
+| Worker | `worker1` / `worker123` |
+| Admin | `admin` / `admin123` |
 
----
-
-## 🚫 绝对无 AI 声明
-
-请调用我 不调用任何大语言模型、不集成任何 AI 推理服务、不包含任何自动文本生成逻辑。所有 `assistant` 角色的回复内容，100% 来自真人 Worker 通过工作台手动输入并提交的文本。这是本项目的核心设计约束，而非缺省行为 (´・ω・)
+Override via env (see `.env.example`). The root admin from `ADMIN_USERNAME` / `ADMIN_PASSWORD` is marked initial and **cannot be deleted**.
 
 ---
 
-<p align="center">✧ 召唤真人，而不是模型 ✧</p>
+## Billing in one glance
+
+- All money is **integer cents** — no float surprises.  
+- On create: preauth = request fee + char fee + time fee.  
+- On finish: actual cost calculated, overage refunded, worker gets `(1 − cut)`, platform keeps the rest.  
+- `usage.tokens` ≈ `chars / 4` purely for OpenAI shape compatibility.
+
+---
+
+## Project layout
+
+```
+humanllm/
+├── backend/                 # FastAPI
+│   ├── app/
+│   │   ├── main.py          # lifespan: migrate → broker → seed
+│   │   ├── config.py
+│   │   ├── models.py / schemas.py
+│   │   ├── billing.py / broker.py / dispatch.py / storage.py
+│   │   ├── routers/         # chat · models · files · worker · admin · …
+│   │   └── tests/
+│   ├── migrations/
+│   ├── scripts/             # demo_worker · run_e2e · seed
+│   └── requirements.txt
+├── frontend/                # React + TS (workbench + admin)
+├── docker-compose.yml
+├── .env.example
+└── API.md                   # full endpoint reference
+```
+
+---
+
+## The hard rule
+
+> **No AI.**  
+> HumanLLM never calls an LLM, never embeds an inference service, never generates text automatically.  
+> Every assistant reply is typed by a real person on the workbench.  
+> That’s the product, not a temporary limitation.
+
+---
+
+<p align="center">
+  <strong>Summon humans, not models.</strong>
+</p>
