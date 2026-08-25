@@ -175,28 +175,24 @@ curl http://localhost:8000/v1/chat/completions \
 
 ## Contributors
 
-<table>
-  <tr>
-    <td align="center" width="120">
-      <a href="https://github.com/alone8199">
-        <img src="https://avatars.githubusercontent.com/u/318525077?s=64&v=4" width="48" height="48" alt="alone8199" style="border-radius: 50%;" />
-      </a><br />
-      <b><a href="https://github.com/alone8199">alone8199</a></b><br />
-      <sub>Author</sub>
-    </td>
-    <td align="center" width="120">
-      <a href="https://x.ai">
-        <img src="https://avatars.githubusercontent.com/u/166632428?s=64&v=4" width="48" height="48" alt="Grok" style="border-radius: 50%;" />
-      </a><br />
-      <b><a href="https://x.ai">Grok</a></b><br />
-      <sub>xAI</sub>
-    </td>
-    <td align="center" width="120">
-      <a href="https://www.workbuddy.cn">
-        <img src="https://www.workbuddy.cn/favicon.ico" width="48" height="48" alt="WorkBuddy" />
-      </a><br />
-      <b><a href="https://www.workbuddy.cn">WorkBuddy</a></b><br />
-      <sub>腾讯</sub>
-    </td>
-  </tr>
-</table>
+> 谢谢这一群「模型」陪我写代码 — 虽然最终回复的是人 😉
+
+<p align="center">
+  <a href="https://www.deepseek.com" title="DeepSeek"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/deepseek-color.svg" width="40" height="40" alt="DeepSeek" /></a>&nbsp;&nbsp;
+  <a href="https://www.stepfun.com" title="Step"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/stepfun-color.svg" width="40" height="40" alt="Step" /></a>&nbsp;&nbsp;
+  <a href="https://tongyi.aliyun.com" title="千问"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/qwen-color.svg" width="40" height="40" alt="Qwen" /></a>&nbsp;&nbsp;
+  <a href="https://x.ai" title="Grok"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/grok.svg" width="40" height="40" alt="Grok" /></a>&nbsp;&nbsp;
+  <a href="https://kimi.moonshot.cn" title="Kimi"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/kimi-color.svg" width="40" height="40" alt="Kimi" /></a>&nbsp;&nbsp;
+  <a href="https://claude.ai" title="Claude"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/claude-color.svg" width="40" height="40" alt="Claude" /></a>&nbsp;&nbsp;
+  <a href="https://openai.com" title="OpenAI"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/openai.svg" width="40" height="40" alt="OpenAI" /></a>&nbsp;&nbsp;
+  <a href="https://gemini.google.com" title="Gemini"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/gemini-color.svg" width="40" height="40" alt="Gemini" /></a>&nbsp;&nbsp;
+  <a href="https://www.doubao.com" title="豆包"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/doubao-color.svg" width="40" height="40" alt="Doubao" /></a>&nbsp;&nbsp;
+  <a href="https://chatglm.cn" title="智谱"><img src="https://unpkg.com/@lobehub/icons-static-svg@latest/icons/chatglm-color.svg" width="40" height="40" alt="ChatGLM" /></a>
+</p>
+
+<p align="center">
+  <sub>
+    <b>DeepSeek</b> · <b>Step</b> · <b>千问</b> · <b>Grok</b> · <b>Kimi</b> ·
+    <b>Claude</b> · <b>OpenAI</b> · <b>Gemini</b> · <b>豆包</b> · <b>智谱</b>
+  </sub>
+</p>
